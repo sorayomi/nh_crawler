@@ -48,7 +48,7 @@ def read_bangos(filename='bango.txt'):
             bangos.append(line.strip())
     return bangos
 
-def download(title, pages, img_id, url, rating, eng_title):
+def download(title, pages, img_id, url_view, rating, eng_title):
     url = 'https://i.nhentai.net/galleries'
     title = title.replace('/', '')
     if args.save_dir[-1] != '/':
@@ -70,7 +70,7 @@ def download(title, pages, img_id, url, rating, eng_title):
     with open(f'{save_dir}{title}/info.txt', 'w') as f:
         f.write(f'Title:\t{title}\n')
         f.write(f'English Title:\t{eng_title}\n')
-        f.write(f'URL:\t{url}\n')
+        f.write(f'URL:\t{url_view}\n')
         f.write(f'pages:\t{pages}\n')
         f.write(f'likes:\t{rating}\n')
         f.write(f'download time:\t{str(datetime.today())}\n')
