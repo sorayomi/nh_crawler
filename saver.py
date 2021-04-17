@@ -4,6 +4,7 @@ import requests
 import time
 import os
 import argparse
+from datetime import datetime
 
 bid_history = []
 data = {'title': [], 'pages': [], 'url': [], 'rating': []}
@@ -47,17 +48,33 @@ def read_bangos(filename='bango.txt'):
             bangos.append(line.strip())
     return bangos
 
-def download(title, pages, img_id):
+def download(title, pages, img_id, url, rating, eng_title):
     url = 'https://i.nhentai.net/galleries'
     title = title.replace('/', '')
     if args.save_dir[-1] != '/':
         save_dir = args.save_dir + '/'
     if not os.path.exists(f'{save_dir}{title}'):
         os.makedirs(f'{save_dir}{title}')
+    
+    # check if downloaded
+    if os.path.isfile(f'{save_dir}{title}/info.txt'):
+        print(f'{title} has been  downloaded before')
+        return
+
     for page in range(int(pages)-1):
         img_data = requests.get(f'{url}/{img_id}/{page+1}.jpg', stream=True).content
-        with open(f'{save_dir}{title}/{page+1}.jpeg', 'wb') as f:
+        with open(f'{save_dir}{title}/{page+1}.jpg', 'wb') as f:
             f.write(img_data)
+
+    # download finished; write information file
+    with open(f'{save_dir}{title}/info.txt', 'w') as f:
+        f.write(f'Title:\t{title}\n')
+        f.write(f'English Title:\t{eng_title}\n')
+        f.write(f'URL:\t{url}\n')
+        f.write(f'pages:\t{pages}\n')
+        f.write(f'likes:\t{rating}\n')
+        f.write(f'download time:\t{str(datetime.today())}\n')
+        f.write(f'\ndownloader: sorayomi\n')
 
 for bango in read_bangos(filename=args.fname):
     res = requests.get(f'https://nhentai.net/g/{bango}')
@@ -76,7 +93,8 @@ for bango in read_bangos(filename=args.fname):
     data['pages'].append(pages)
     data['url'].append(url)
     data['rating'].append(favorite)
-    download(title, pages, img_id)
+    download(title, pages, img_id, url, favorite, eng_title)
+    
     time.sleep(0.1)
 
 print(data)
