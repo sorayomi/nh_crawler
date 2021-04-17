@@ -3,9 +3,19 @@ import pandas as pd
 import requests
 import time
 import os
+import argparse
 
 bid_history = []
 data = {'title': [], 'pages': [], 'url': [], 'rating': []}
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--fname', type=str, default='bango.txt',
+                    help='a file that contains a bango list')
+parser.add_argument('--save-dir', type=str, default='./',
+                    help='save to the directory')
+
+args = parser.parse_args()
 
 def query_bid(bid):
     url = f'https://nhentai.net/g/{bid}/'
@@ -40,16 +50,16 @@ def read_bangos(filename='bango.txt'):
 def download(title, pages, img_id):
     url = 'https://i.nhentai.net/galleries'
     title = title.replace('/', '')
-    if not os.path.exists(title):
-        os.mkdir(f'{title}')
+    if args.save_dir[-1] != '/':
+        save_dir = args.save_dir + '/'
+    if not os.path.exists(f'{save_dir}{title}'):
+        os.makedirs(f'{save_dir}{title}')
     for page in range(int(pages)-1):
-        #print(f'{url}/{img_id}/{page+1}.jpg')
         img_data = requests.get(f'{url}/{img_id}/{page+1}.jpg', stream=True).content
-        with open(f'{title}/{page+1}.jpeg', 'wb') as f:
+        with open(f'{save_dir}{title}/{page+1}.jpeg', 'wb') as f:
             f.write(img_data)
-            #shutil.copyfileobj(img_data.raw, f)
 
-for bango in read_bangos():
+for bango in read_bangos(filename=args.fname):
     res = requests.get(f'https://nhentai.net/g/{bango}')
     soup = BeautifulSoup(res.text, features='html.parser')
     mangas = soup.find_all('div', {'class': 'gallery'})
