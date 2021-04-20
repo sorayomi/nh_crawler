@@ -128,4 +128,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+bango.txt
 test/
+collections/

@@ -13,7 +13,7 @@ data = {'title': [], 'pages': [], 'url': [], 'rating': []}
 parser = argparse.ArgumentParser()
 parser.add_argument('--fname', type=str, default='bango.txt',
                     help='a file that contains a bango list')
-parser.add_argument('--save-dir', type=str, default='./',
+parser.add_argument('--save-dir', type=str, default='./collections/',
                     help='save to the directory')
 
 args = parser.parse_args()
@@ -53,6 +53,8 @@ def download(title, pages, img_id, url_view, rating, eng_title):
     title = title.replace('/', '')
     if args.save_dir[-1] != '/':
         save_dir = args.save_dir + '/'
+    else:
+        save_dir = args.save_dir
     if not os.path.exists(f'{save_dir}{title}'):
         os.makedirs(f'{save_dir}{title}')
     
